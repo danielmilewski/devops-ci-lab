@@ -22,5 +22,11 @@ jobs:
       - name: Build Docker image
         run: docker build -t "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:${IMAGE_TAG}" .
 
+      - name: Test container
+        run: |
+          docker run -d -p 8080:5000 "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:${IMAGE_TAG}"
+          sleep 5
+          curl -f http://localhost:8080
+
       - name: Push Docker image
         run: docker push "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:${IMAGE_TAG}"
