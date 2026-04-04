@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -29,7 +30,7 @@ jobs:
           curl -f http://localhost:8080
 
       - name: Tag image as latest
-         run: |
+        run: |
            docker tag "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:${IMAGE_TAG}" \
                       "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:latest"
 
