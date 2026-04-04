@@ -28,5 +28,12 @@ jobs:
           sleep 5
           curl -f http://localhost:8080
 
+       - name: Tag image as latest
+         run: |
+           docker tag "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:${IMAGE_TAG}" \
+                      "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:latest"
+
       - name: Push Docker image
-        run: docker push "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:${IMAGE_TAG}"
+        run: |
+          docker push "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:${IMAGE_TAG}"
+          docker push "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:latest"
