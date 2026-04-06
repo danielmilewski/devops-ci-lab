@@ -1,4 +1,4 @@
-name: CI Pipeline
+name:  CI/CD Pipeline
 
 on:
   push:
@@ -38,3 +38,36 @@ jobs:
         run: |
           docker push "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:${IMAGE_TAG}"
           docker push "${{ secrets.DOCKER_USERNAME }}/devops-ci-lab:latest"
+  
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Verify cluster access
+        run: kubectl get nodes
+
+      - name: Apply Kubernetes manifest
+        run: kubectl apply -f deployment.yaml
+
+      - name: Update deployment image
+        run: |
+          kubectl set image deployment/devops-ci-lab \
+            devops-ci-lab="${IMAGE_NAME}:${GITHUB_SHA}"
+
+      - name: Wait for rollout
+        run: kubectl rollout status deployment/devops-ci-lab
+
+      - name: Verify deployed image
+        run: |
+          kubectl get deployment devops-ci-lab -o jsonpath="{.spec.template.spec.containers[0].image}"
+          echo
