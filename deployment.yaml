@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-ci-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devops-ci-lab
+  template:
+    metadata:
+      labels:
+        app: devops-ci-lab
+    spec:
+      containers:
+        - name: devops-ci-lab
+          image: milewski1990/devops-ci-lab:60aeba0c6584b0ddb3619af8610fb53224a25a24
+          ports:
+            - containerPort: 5000
